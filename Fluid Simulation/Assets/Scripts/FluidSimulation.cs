@@ -4,54 +4,6 @@ using UnityEngine;
 
 public class FluidSimulation : MonoBehaviour
 {
-    //public class Particle : MonoBehaviour
-    //{
-    //    public Particle(Vector3 position, float mass, Vector3 velocity, Material mat, float checkingRadius)
-    //    {
-    //        Position = position;
-    //        Mass = mass;
-    //        Velocity = velocity;
-    //        NeighborCheckingRadius = checkingRadius;
-    //        Neighbors = new List<GameObject>();
-
-    //        GObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-    //        GObject.name = "Particle";
-    //        Rigidbody rb = GObject.AddComponent<Rigidbody>();
-    //        rb.useGravity = false;
-    //        rb.constraints = RigidbodyConstraints.FreezeRotation;
-    //        GObject.GetComponent<MeshRenderer>().material = mat;
-    //        CheckingCollider = GObject.AddComponent<SphereCollider>();
-    //        CheckingCollider.radius = checkingRadius;
-    //        CheckingCollider.isTrigger = true;
-    //        GObject.transform.position = Position;
-    //    }
-
-    //    public void UpdateParticlePosition(Vector3 newPosition)
-    //    {
-    //        Position = newPosition;
-    //        GObject.transform.position = newPosition;
-    //    }
-
-    //    private void OnTriggerStay(Collider other)
-    //    {
-    //        Neighbors.Add(other.gameObject);
-    //    }
-
-    //    private void OnTriggerExit(Collider other)
-    //    {
-    //        Neighbors.Remove(other.gameObject);
-    //    }
-
-    //    private SphereCollider CheckingCollider;
-
-    //    public readonly List<GameObject> Neighbors;
-    //    public GameObject GObject { get;  set; }
-    //    public Vector3 Position { get; set; }
-    //    public float Mass { get; set; }
-    //    public Vector3 Velocity { get; set; }
-    //    public float NeighborCheckingRadius { get; set; }
-    //}
-
     public int numberOfParticles = 100;
     public float particleXDistance = 1;
     public float particleZDistance = 1;
@@ -84,22 +36,11 @@ public class FluidSimulation : MonoBehaviour
                     Vector3 particlePosition = new Vector3(position.x + k * particleXDistance, position.y - i * particleYDistance, position.z + j * particleZDistance);
                     GameObject p = Instantiate(particle, particlePosition, Quaternion.identity);
                     p.transform.parent = this.gameObject.transform;
-                    foreach (SphereCollider col in p.GetComponents(typeof(SphereCollider)))
-                    {
-                        if(col.isTrigger == true)
-                        {
-                            col.radius = neighborCheckingRadius;
-                        }
-                    }
+                    p.GetComponent<Particle>().neighborCheckingRadius = neighborCheckingRadius;
                     particles[i] = p;
                 }
             }
         }
-    }
-
-    private float DensityEstimation()
-    {
-        return 0;
     }
 
     // Update is called once per frame

@@ -19,14 +19,18 @@ public class Particle : MonoBehaviour
         checkingCollider = GetComponent<SphereCollider>();
     }
 
-    private void OnTriggerStay(Collider other)
+    private void Update()
     {
-        if (!neighbors.Contains(other.gameObject) && other.gameObject.layer != LayerMask.NameToLayer("Walls"))
-            neighbors.Add(other.gameObject);
-    }
+        List<GameObject> objects = new List<GameObject>();
+        Collider[] hitColliders = Physics.OverlapSphere(this.transform.position, neighborCheckingRadius, Physics.DefaultRaycastLayers);
+        foreach (Collider col in hitColliders)
+        {
+            if(!col.gameObject.Equals(this.gameObject))
+            {
+                objects.Add(col.gameObject);
+            }
+        }
 
-    private void OnTriggerExit(Collider other)
-    {
-        neighbors.Remove(other.gameObject);
+        neighbors = objects;
     }
 }

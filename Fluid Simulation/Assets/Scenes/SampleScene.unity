@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 761230404}
   - component: {fileID: 761230403}
   - component: {fileID: 761230402}
-  m_Layer: 3
+  m_Layer: 2
   m_Name: Front Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 892772853}
   - component: {fileID: 892772852}
   - component: {fileID: 892772851}
-  m_Layer: 3
+  m_Layer: 2
   m_Name: Back Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -629,11 +629,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f1147563995c8458e4ae1650cef2a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfParticles: 1000
+  numberOfParticles: 5000
   particleXDistance: 1
   particleZDistance: 1
   particleYDistance: 1
-  verticalLayers: 2
+  verticalLayers: 5
   horizontalLayers: 20
   particleMass: 2
   neighborCheckingRadius: 1
@@ -717,7 +717,7 @@ GameObject:
   - component: {fileID: 1352226566}
   - component: {fileID: 1352226565}
   - component: {fileID: 1352226564}
-  m_Layer: 3
+  m_Layer: 2
   m_Name: Left Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -812,7 +812,7 @@ GameObject:
   - component: {fileID: 1785764088}
   - component: {fileID: 1785764087}
   - component: {fileID: 1785764086}
-  m_Layer: 3
+  m_Layer: 2
   m_Name: Right Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
