@@ -1,54 +1,91 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FluidSimulation : MonoBehaviour
+public class FluidSimulation
 {
-    public int numberOfParticles = 100;
-    public float particleXDistance = 1;
-    public float particleZDistance = 1;
-    public float particleYDistance = 1;
-    public int verticalLayers = 2;
-    public int horizontalLayers = 5;
-    public float particleMass = 2;
-    public float neighborCheckingRadius = 2;
+    public List<Particle> particles;
 
-    public GameObject particle;
+    public SmoothingKernel Poly6;
+    public SmoothingKernel Spiky;
+    public SmoothingKernel Viscosity;
 
-    public Material particleMaterial;
+    public Particle particle;
 
-    private GameObject[] particles;
+    public Vector3 FSForce;
+    public Vector3 dist;
+    public Vector3 FSVelocity;
 
-    // Start is called before the first frame update
-    void Start()
+    public float maxDist;
+    public float maxDistSq;
+    public float scalar;
+    public float FSPressureSum;
+    public float distLen;
+
+    public FluidSimulation()
     {
-        Vector3 position = this.transform.position;
+        particles = new List<Particle>();
+        particle = new Particle();
+        Poly6 = new Poly6(1.0f);
+        Spiky = new Spiky(1.0f);
+        Viscosity = new Viscosity(1.0f);
 
-        int lineLength = (numberOfParticles / verticalLayers) / horizontalLayers;
+        maxDist = particle.Size * 0.5f;
+        maxDistSq = maxDist * maxDist;
+    }
 
-        particles = new GameObject[numberOfParticles];
-        for(int i = 0; i < verticalLayers; i++)
+    public void ConceptualParticle(Vector3 position)
+    {
+        particle = new Particle();
+        particle.Position = position;
+        particles.Add(particle);
+    }
+
+    public void CalculateDensities(int index)
+    {
+        particles[index].Density = 0.0f;
+        particles[index].Density += particles[index].Mass * (float)Poly6.Calculate(ref dist);
+    }
+
+
+    public void CalculateFSForces(int indexPart, int indexOther)
+    {
+        if(particles[indexOther].Density > Mathf.Epsilon && particles[indexPart] != particles[indexOther])
         {
-            for (int j = 0; j < horizontalLayers; j++)
+            dist = particles[indexPart].Position - particles[indexOther].Position;
+            distLen = dist.sqrMagnitude;
+            if (distLen < maxDist)
             {
-                for (int k = 0; k < lineLength; k++)
-                {
-                    Vector3 particlePosition = new Vector3(position.x + k * particleXDistance, position.y - i * particleYDistance, position.z + j * particleZDistance);
-                    GameObject p = Instantiate(particle, particlePosition, Quaternion.identity);
-                    p.transform.parent = this.gameObject.transform;
-                    p.GetComponent<Particle>().neighborCheckingRadius = neighborCheckingRadius;
-                    particles[i] = p;
-                }
+                // Calculate pressure forces
+                FSForce = CalculateFSPressure(particles[indexOther].Mass, particles[indexPart].Pressure, particles[indexOther].Pressure, particles[indexOther].Density, ref dist);
+                particles[indexPart].Force -= FSForce;
+                particles[indexOther].Force -= FSForce;
+
+                // Calculate Viscosity forces
+                FSForce = CalculateFSViscosity(particles[indexOther].Mass, particles[indexPart].Velocity, particles[indexOther].Velocity, particles[indexOther].Density, ref dist);
+                particles[indexPart].Force += FSForce;
+                particles[indexOther].Force += FSForce;
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public Vector3 CalculateFSPressure(float mass, float iPressure, float jPressure, float density, ref Vector3 distance)
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log(particles[0].GetComponent<Particle>().neighbors.Count);
-        }
+        FSPressureSum = (iPressure + jPressure) / (2.0f * density);
+        FSForce = Spiky.CalculateGradient(ref distance);
+        scalar = mass * FSPressureSum;
+        FSForce *= scalar;
+
+        return FSForce;
+    }
+
+    public Vector3 CalculateFSViscosity(float mass, Vector3 iVelocity, Vector3 jVelocity, float density, ref Vector3 distance)
+    {
+        FSVelocity = (jVelocity - iVelocity) / density;
+        FSVelocity = FSVelocity * mass * (float)Viscosity.CalculateLaplacian(ref distance);
+        FSForce = Vector3.Scale(FSForce, FSVelocity);
+
+        return FSForce;
     }
 }

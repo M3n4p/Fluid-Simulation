@@ -2,35 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Particle : MonoBehaviour
+public class Particle
 {
+    public float Mass;
+    public float Size;
+    public Vector3 Position;
+    public Vector3 PreviousPosition;
+    public Vector3 Velocity;
+    public Vector3 Force;
+    public float Density;
+    public float Pressure;
+    public float Viscosity;
+    public float GasConstant;
+    public float DensityOffset;
 
-    private SphereCollider checkingCollider;
-
-    public List<GameObject> neighbors;
-    public float mass { get; set; }
-    public Vector3 velocity { get; set; }
-    public float neighborCheckingRadius { get; set; }
-
-    // Start is called before the first frame update
-    void Start()
+    public Particle()
     {
-        neighbors = new List<GameObject>();
-        checkingCollider = GetComponent<SphereCollider>();
+        Mass = 2.99f * Mathf.Pow(10f, -23f);
+        Size = 1.0f;
+        Viscosity = 1.0f;
+        Position = Vector3.zero;
+        PreviousPosition = Position;
+        Velocity = Vector3.zero;
+        Force = Vector3.zero;
+        Density = 1000f;
+        GasConstant = 8.3145f;
+        DensityOffset = 100.0f;
     }
 
-    private void Update()
+    public void UpdatePressure()
     {
-        List<GameObject> objects = new List<GameObject>();
-        Collider[] hitColliders = Physics.OverlapSphere(this.transform.position, neighborCheckingRadius, Physics.DefaultRaycastLayers);
-        foreach (Collider col in hitColliders)
-        {
-            if(!col.gameObject.Equals(this.gameObject))
-            {
-                objects.Add(col.gameObject);
-            }
-        }
+        Pressure = GasConstant * (Density - DensityOffset);
+    }
 
-        neighbors = objects;
+    public void Update(float dTime)
+    {
+        Integrate(ref Position, ref PreviousPosition, ref Velocity, Force, Mass, dTime);
+    }
+
+    public void Integrate(ref Vector3 position, ref Vector3 previousPosition, ref Vector3 velocity, Vector3 force, float mass, float timeStep)
+    {
+        previousPosition = position;
+        Vector3 acceleration = force / mass;
+        velocity = velocity + acceleration * timeStep;
+        position = position + velocity * timeStep;
     }
 }
