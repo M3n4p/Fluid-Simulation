@@ -11,12 +11,13 @@ public class FluidSimulationSystem : MonoBehaviour
     private Particle tempParticle;
 
     private static float UpdateTime = 0.05f;
-    private float particleNumber;
+    private int particleNumberX, particleNumberY, particleNumberZ;
+    private Vector3 particleVelocity;
 
     public FluidSimulationSystem()
     {
         tempParticle = new Particle();
-        tempParticle.Velocity = new Vector3(10.0f, 0.0f, 0.0f);
+        tempParticle.Velocity = particleVelocity;
         fs = new FluidSimulation();
     }
 
@@ -24,32 +25,42 @@ public class FluidSimulationSystem : MonoBehaviour
     void Start()
     {
         tempParticle.Size = GameManager.manager.ParticleSize;
-        particleNumber = GameManager.manager.ParticleResolution;
+        particleNumberX = GameManager.manager.NumberOfParticlesX;
+        particleNumberY = GameManager.manager.NumberOfParticlesY;
+        particleNumberZ = GameManager.manager.NumberOfParticlesZ;
+        particleVelocity = GameManager.manager.ParticleVelocity;
         CreateParticle();
         StartCoroutine("CalculateFS");
     }
 
     private void CreateParticle()
     {
-        for(int i = 0; i < particleNumber; i++)
+        for(int i = 0; i < particleNumberX; i++)
         {
-            for(int j = 0; j < particleNumber; j++)
+            for(int j = 0; j < particleNumberY; j++)
             {
-                drawParticle = VisualParticle(i, j);
-                drawParticleList.Add(drawParticle);
-                fs.ConceptualParticle(drawParticle.transform.position);
+                for (int k = 0; k < particleNumberZ; k++)
+                {
+                    drawParticle = VisualParticle(i, j, k);
+                    drawParticleList.Add(drawParticle);
+                    fs.ConceptualParticle(drawParticle.transform.position);
+                }
             }
         }
     }
 
-    private GameObject VisualParticle(int loopIndex1, int loopIndex2)
+    private GameObject VisualParticle(int loopIndex1, int loopIndex2, int loopIndex3)
     {
+        float particleNumberXHalf = particleNumberX / 2.0f;
+        float particleNumberYHalf = particleNumberY / 2.0f;
+        float particleNumberZHalf = particleNumberZ / 2.0f;
         drawParticle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        drawParticle.AddComponent<Rigidbody>();
-        drawParticle.transform.position = new Vector3(loopIndex1 + (transform.position.x - tempParticle.Size * 2.0f), transform.position.y, loopIndex2 + (transform.position.z - tempParticle.Size * 2.0f));
+        Rigidbody rb = drawParticle.AddComponent<Rigidbody>();
+        drawParticle.transform.position = new Vector3(loopIndex1 - particleNumberXHalf + transform.position.x, loopIndex2 - particleNumberYHalf + transform.position.y, loopIndex3 - particleNumberZHalf + transform.position.z);
         drawParticle.transform.localScale = new Vector3(tempParticle.Size, tempParticle.Size, tempParticle.Size);
-        drawParticle.GetComponent<Rigidbody>().mass = tempParticle.Mass;
-        drawParticle.GetComponent<Rigidbody>().velocity = tempParticle.Velocity;
+        rb.mass = tempParticle.Mass;
+        rb.velocity = tempParticle.Velocity;
+        //rb.useGravity = false;
         drawParticle.GetComponent<MeshRenderer>().material = GameManager.manager.ParticleMaterial;
         drawParticle.name = "Particle";
         drawParticle.tag = "fluid";
@@ -59,13 +70,12 @@ public class FluidSimulationSystem : MonoBehaviour
 
     public void Calculate()
     {
-        particleNumber = GameManager.manager.ParticleResolution;
-        for(int i = 0; i < fs.particles.Count; i++)
+        for (int i = 0; i < fs.particles.Count; i++)
         {
             fs.particles[i].Position = drawParticleList[i].transform.position;
             fs.particles[i].Update(UpdateTime);
 
-            for(int j = 0; j < fs.particles.Count; j++)
+            for (int j = 0; j < fs.particles.Count; j++)
             {
                 fs.particles[i].UpdatePressure();
                 fs.CalculateDensities(i);
@@ -73,7 +83,7 @@ public class FluidSimulationSystem : MonoBehaviour
                 fs.particles[j].Position = drawParticleList[j].transform.position;
                 fs.distLen = Vector3.Distance(fs.particles[i].Position, fs.particles[j].Position);
 
-                if(fs.distLen <= fs.particles[i].Size)
+                if (fs.distLen <= fs.particles[i].checkSize)
                 {
                     fs.CalculateFSForces(i, j);
                     drawParticleList[j].transform.position = fs.particles[j].Position;

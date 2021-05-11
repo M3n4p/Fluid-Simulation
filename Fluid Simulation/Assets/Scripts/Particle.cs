@@ -6,6 +6,7 @@ public class Particle
 {
     public float Mass;
     public float Size;
+    public float checkSize;
     public Vector3 Position;
     public Vector3 PreviousPosition;
     public Vector3 Velocity;
@@ -20,6 +21,7 @@ public class Particle
     {
         Mass = 2.99f * Mathf.Pow(10f, -23f);
         Size = 1.0f;
+        checkSize = 2.0f;
         Viscosity = 1.0f;
         Position = Vector3.zero;
         PreviousPosition = Position;

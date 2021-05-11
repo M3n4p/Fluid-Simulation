@@ -5,8 +5,10 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager manager;
-
-    public int ParticleResolution = 15;
+    public int NumberOfParticlesX = 10;
+    public int NumberOfParticlesZ = 10;
+    public int NumberOfParticlesY = 2;
+    public Vector3 ParticleVelocity = Vector3.zero;
     public float ParticleSize = 1.0f;
     public Material ParticleMaterial;
 
