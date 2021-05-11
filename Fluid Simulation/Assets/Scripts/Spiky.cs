@@ -14,7 +14,7 @@ public class Spiky : SmoothingKernel
         Scaling = 15.0f / (Mathf.PI * Mathf.Pow((float)SmoothingLength, 6.0f));
         lengthOfDistance = distance.sqrMagnitude;
 
-        if(lengthOfDistance > SmoothingLengthSq || lengthOfDistance < Mathf.Epsilon)
+        if(lengthOfDistance > SmoothingLengthSq || lengthOfDistance < 0)
         {
             return 0.0f;
         }
@@ -28,7 +28,7 @@ public class Spiky : SmoothingKernel
         lengthOfDistance = distance.sqrMagnitude;
         Scaling = 45.0f / (Mathf.PI * Mathf.Pow((float)SmoothingLength, 6.0f) * lengthOfDistance);
 
-        if(lengthOfDistance > SmoothingLengthSq || lengthOfDistance < Mathf.Epsilon)
+        if(lengthOfDistance > SmoothingLengthSq || lengthOfDistance < 0)
         {
             return Vector3.zero;
         }

@@ -6,6 +6,8 @@ public class FluidSimulationSystem : MonoBehaviour
 {
     public List<GameObject> drawParticleList = new List<GameObject>();
 
+    public ComputeShader computeShader;
+
     private GameObject drawParticle;
     private FluidSimulation fs;
     private Particle tempParticle;
@@ -17,20 +19,19 @@ public class FluidSimulationSystem : MonoBehaviour
     public FluidSimulationSystem()
     {
         tempParticle = new Particle();
-        tempParticle.Velocity = particleVelocity;
-        fs = new FluidSimulation();
+        fs = new FluidSimulation(computeShader);
     }
 
     // Start is called before the first frame update
     void Start()
     {
         tempParticle.Size = GameManager.manager.ParticleSize;
+        tempParticle.Velocity = GameManager.manager.ParticleVelocity;
         particleNumberX = GameManager.manager.NumberOfParticlesX;
         particleNumberY = GameManager.manager.NumberOfParticlesY;
         particleNumberZ = GameManager.manager.NumberOfParticlesZ;
-        particleVelocity = GameManager.manager.ParticleVelocity;
         CreateParticle();
-        StartCoroutine("CalculateFS");
+        //StartCoroutine("CalculateFS");
     }
 
     private void CreateParticle()
@@ -56,7 +57,7 @@ public class FluidSimulationSystem : MonoBehaviour
         float particleNumberZHalf = particleNumberZ / 2.0f;
         drawParticle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Rigidbody rb = drawParticle.AddComponent<Rigidbody>();
-        drawParticle.transform.position = new Vector3(loopIndex1 - particleNumberXHalf + transform.position.x, loopIndex2 - particleNumberYHalf + transform.position.y, loopIndex3 - particleNumberZHalf + transform.position.z);
+        drawParticle.transform.position = new Vector3(loopIndex1 - (particleNumberXHalf * tempParticle.Size) + transform.position.x, loopIndex2 - (particleNumberYHalf * tempParticle.Size) + transform.position.y, loopIndex3 - (particleNumberZHalf * tempParticle.Size) + transform.position.z);
         drawParticle.transform.localScale = new Vector3(tempParticle.Size, tempParticle.Size, tempParticle.Size);
         rb.mass = tempParticle.Mass;
         rb.velocity = tempParticle.Velocity;
@@ -95,7 +96,7 @@ public class FluidSimulationSystem : MonoBehaviour
 
     IEnumerator CalculateFS()
     {
-        for(; ; )
+        for (; ; )
         {
             Calculate();
             yield return new WaitForSeconds(UpdateTime);

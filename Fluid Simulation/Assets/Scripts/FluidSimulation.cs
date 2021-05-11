@@ -7,6 +7,8 @@ public class FluidSimulation
 {
     public List<Particle> particles;
 
+    public ComputeShader ComputeShader;
+
     public SmoothingKernel Poly6;
     public SmoothingKernel Spiky;
     public SmoothingKernel Viscosity;
@@ -23,13 +25,15 @@ public class FluidSimulation
     public float FSPressureSum;
     public float distLen;
 
-    public FluidSimulation()
+    public FluidSimulation(ComputeShader computeShader)
     {
         particles = new List<Particle>();
         particle = new Particle();
         Poly6 = new Poly6(1.0f);
         Spiky = new Spiky(1.0f);
         Viscosity = new Viscosity(1.0f);
+
+        ComputeShader = computeShader;
 
         maxDist = particle.Size * 0.5f;
         maxDistSq = maxDist * maxDist;

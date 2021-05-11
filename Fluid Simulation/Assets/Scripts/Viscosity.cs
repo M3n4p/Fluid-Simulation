@@ -17,7 +17,7 @@ public class Viscosity : SmoothingKernel
         lengthOfDistanceSq = Mathf.Pow((float)lengthOfDistance, 2.0f);
         lengthOfDistanceCb = Mathf.Pow((float)lengthOfDistance, 3.0f);
 
-        if(lengthOfDistance > SmoothingLength || lengthOfDistance < Mathf.Epsilon)
+        if(lengthOfDistance > SmoothingLength || lengthOfDistance < 0)
         {
             return 0.0d;
         }
@@ -34,7 +34,7 @@ public class Viscosity : SmoothingKernel
         lengthOfDistanceSq = Mathf.Pow(distance.sqrMagnitude, 2.0f);
         lengthOfDistanceCb = Mathf.Pow(distance.sqrMagnitude, 3.0f);
 
-        if(lengthOfDistance > SmoothingLength || lengthOfDistance <= Mathf.Epsilon)
+        if(lengthOfDistance > SmoothingLength || lengthOfDistance <= 0)
         {
             return Vector3.zero;
         }
@@ -50,7 +50,7 @@ public class Viscosity : SmoothingKernel
         Scaling = 15.0f / Mathf.Pow((float)SmoothingLength, 5.0f);
         lengthOfDistance = distance.sqrMagnitude;
 
-        if(lengthOfDistance > SmoothingLength || lengthOfDistance < Mathf.Epsilon)
+        if(lengthOfDistance > SmoothingLength || lengthOfDistance < 0)
         {
             return 0.0f;
         }

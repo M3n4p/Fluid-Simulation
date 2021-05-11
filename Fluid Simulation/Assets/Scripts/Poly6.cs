@@ -14,7 +14,7 @@ public class Poly6 : SmoothingKernel
         Scaling = 315.0f / (64.0f * Mathf.PI * Mathf.Pow((float)SmoothingLength, 9.0f));
         lengthOfDistanceSq = (float)Mathf.Pow(distance.sqrMagnitude, 2.0f);
 
-        if(lengthOfDistanceSq >= SmoothingLengthSq || lengthOfDistanceSq <= Mathf.Epsilon)
+        if(lengthOfDistanceSq >= SmoothingLengthSq || lengthOfDistanceSq <= 0)
         {
             return 0.0f;
         }
@@ -29,7 +29,7 @@ public class Poly6 : SmoothingKernel
         Scaling = 945.0f / (32.0f * Mathf.PI * Mathf.Pow((float)SmoothingLength, 9.0f));
         lengthOfDistanceSq = Mathf.Pow(distance.sqrMagnitude, 2.0f);
 
-        if(lengthOfDistanceSq > SmoothingLengthSq || lengthOfDistanceSq <= Mathf.Epsilon)
+        if(lengthOfDistanceSq > SmoothingLengthSq || lengthOfDistanceSq <= 0)
         {
             return Vector3.zero;
         }
@@ -45,7 +45,7 @@ public class Poly6 : SmoothingKernel
         this.Scaling = 945.0f / (8.0f * Mathf.PI * (float)Mathf.Pow((float)SmoothingLength, 9.0f));
         lengthOfDistanceSq = Mathf.Pow(distance.sqrMagnitude, 2.0f);
 
-        if(lengthOfDistanceSq > SmoothingLengthSq || lengthOfDistanceSq <= Mathf.Epsilon)
+        if(lengthOfDistanceSq > SmoothingLengthSq || lengthOfDistanceSq <= 0)
         {
             return 0.0f;
         }
